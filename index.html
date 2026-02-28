@@ -3,104 +3,174 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Countdown</title>
+<title>Countdown Pro</title>
 
 <style>
 body {
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: #f2f2f7;
   margin: 0;
-  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(180deg, #070709, #111115);
+  color: #ffffff;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* TOP BAR */
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 40px;
+  height: 22vh;
+}
+
+.controls {
+  display: flex;
+  gap: 20px;
+}
+
+button {
+  padding: 14px 32px;
+  border-radius: 16px;
+  border: none;
+  font-size: 18px;
+  font-weight: 600;
+  background: rgba(255,255,255,0.12);
+  color: white;
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+}
+
+button:active {
+  transform: scale(0.96);
+}
+
+/* SPINNER */
+#spinner {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 6px solid rgba(255,255,255,0.1);
+  border-top: 6px solid white;
+  opacity: 0;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* COUNTER */
+.counterBox {
+  background: #1f1f25;
+  border-radius: 24px;
+  padding: 30px 60px;
+  min-width: 220px;
   text-align: center;
+  box-shadow: 0 0 60px rgba(0,0,0,0.8);
 }
 
-.container {
-  max-width: 400px;
-  margin: auto;
+#counterDisplay {
+  font-size: clamp(70px, 8vw, 120px);
+  font-weight: 700;
+  letter-spacing: 6px;
 }
 
-.card {
-  background: white;
+/* DISPLAY AREA */
+.displayArea {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  overflow: hidden;
+}
+
+/* RESPONSIVE NOTES */
+#noteDisplay {
+  display: none;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  font-weight: 600;
+  line-height: 1.2;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 20px;
-  border-radius: 20px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  font-size: clamp(24px, 5vw, 80px);
 }
 
-h1 {
-  font-size: 24px;
-  margin-bottom: 20px;
+/* RESPONSIVE IMAGE */
+#uploadedImage {
+  display: none;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 20px;
+}
+
+/* INPUT PANEL */
+#inputPanel {
+  position: fixed;
+  inset: 0;
+  background: #070709;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
 }
 
 input, textarea {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 15px;
-  border-radius: 12px;
-  border: 1px solid #d1d1d6;
+  width: 300px;
+  padding: 14px;
+  margin: 10px 0;
+  border-radius: 14px;
+  border: none;
   font-size: 16px;
-  box-sizing: border-box;
 }
 
 textarea {
   resize: none;
   height: 80px;
 }
-
-button {
-  width: 100%;
-  padding: 14px;
-  border-radius: 14px;
-  border: none;
-  font-size: 16px;
-  margin-top: 10px;
-}
-
-.primary {
-  background-color: #007aff;
-  color: white;
-}
-
-.secondary {
-  background-color: #e5e5ea;
-}
-
-button:disabled {
-  opacity: 0.5;
-}
-
-#counterDisplay {
-  font-size: 64px;
-  font-weight: 600;
-  margin-top: 25px;
-}
-
-#noteDisplay {
-  margin-top: 10px;
-  font-size: 18px;
-  color: #6c6c70;
-}
 </style>
 </head>
 
 <body>
 
-<div class="container">
-  <div class="card">
+<div id="inputPanel">
+  <h2>Start Countdown</h2>
+  <input type="number" id="counterValue" placeholder="Counter value (max 4 digits)" max="9999">
+  <input type="number" id="secondsValue" placeholder="Seconds interval">
+  <textarea id="notesValue" placeholder="Notes (optional)"></textarea>
+  <input type="file" id="photoInput" accept="image/*">
+  <button onclick="startFromInput()">Start</button>
+</div>
 
-    <h1>Countdown</h1>
-
-    <input type="number" id="counterValue" placeholder="Counter value">
-    <input type="number" id="secondsValue" placeholder="Seconds interval">
-    <textarea id="notesValue" placeholder="Notes"></textarea>
-
-    <button class="primary" onclick="startCountdown()">Start</button>
-    <button class="secondary" onclick="pauseCountdown()" id="pauseBtn" disabled>Pause</button>
-    <button class="secondary" onclick="resetCountdown()" id="resetBtn" disabled>Reset</button>
-
-    <div id="counterDisplay"></div>
-    <div id="noteDisplay"></div>
-
+<div class="topBar">
+  <div class="controls">
+    <button id="startBtn" onclick="handleStartStop()">Start</button>
+    <button id="pauseBtn" onclick="handlePause()">Pause</button>
+    <button onclick="resetApp()">Reset</button>
   </div>
+
+  <div id="spinner"></div>
+
+  <div class="counterBox">
+    <div id="counterDisplay">0000</div>
+  </div>
+</div>
+
+<div class="displayArea">
+  <div id="noteDisplay"></div>
+  <img id="uploadedImage">
 </div>
 
 <script>
@@ -108,64 +178,105 @@ let interval = null;
 let currentValue = 0;
 let seconds = 1;
 let isRunning = false;
+let isPaused = false;
 
-function startCountdown() {
-  if (!isRunning) {
-    if (currentValue === 0) {
-      currentValue = parseInt(document.getElementById("counterValue").value);
-      seconds = parseInt(document.getElementById("secondsValue").value);
+/* START FROM INPUT */
+function startFromInput() {
+  currentValue = parseInt(counterValue.value);
+  seconds = parseInt(secondsValue.value);
+
+  if (!currentValue || !seconds || currentValue > 9999) {
+    alert("Enter valid values");
+    return;
+  }
+
+  const notes = notesValue.value;
+  const file = photoInput.files[0];
+
+  if (!notes.trim() && !file) {
+    alert("Enter notes or upload photo.");
+    return;
+  }
+
+  inputPanel.style.display = "none";
+
+  if (file) {
+    noteDisplay.style.display = "none";
+    const reader = new FileReader();
+    reader.onload = e => {
+      uploadedImage.src = e.target.result;
+      uploadedImage.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+  } else {
+    uploadedImage.style.display = "none";
+    noteDisplay.innerText = notes;
+    noteDisplay.style.display = "flex";
+  }
+
+  counterDisplay.innerText = String(currentValue).padStart(4, "0");
+  startTimer();
+}
+
+/* TIMER */
+function startTimer() {
+  isRunning = true;
+  isPaused = false;
+  startBtn.innerText = "Stop";
+  pauseBtn.innerText = "Pause";
+  spinner.style.opacity = "1";
+  spinner.style.animationPlayState = "running";
+
+  interval = setInterval(() => {
+    currentValue--;
+    counterDisplay.innerText = String(currentValue).padStart(4, "0");
+
+    if (currentValue <= 0) {
+      clearInterval(interval);
+      interval = null;
+      isRunning = false;
+      spinner.style.opacity = "0";
+      startBtn.innerText = "Start";
     }
+  }, seconds * 1000);
+}
 
-    if (isNaN(currentValue) || isNaN(seconds) || currentValue <= 0 || seconds <= 0) {
-      alert("Enter valid numbers");
-      return;
-    }
-
-    document.getElementById("noteDisplay").innerText =
-      document.getElementById("notesValue").value;
-
-    document.getElementById("counterDisplay").innerText = currentValue;
-
-    interval = setInterval(() => {
-      currentValue--;
-      document.getElementById("counterDisplay").innerText = currentValue;
-
-      if (currentValue <= 0) {
-        clearInterval(interval);
-        isRunning = false;
-        toggleButtons(false);
-      }
-    }, seconds * 1000);
-
-    isRunning = true;
-    toggleButtons(true);
+/* START / STOP */
+function handleStartStop() {
+  if (!isRunning && currentValue > 0) {
+    startTimer();
+  } else {
+    clearInterval(interval);
+    interval = null;
+    isRunning = false;
+    isPaused = false;
+    spinner.style.opacity = "0";
+    currentValue = 0;
+    counterDisplay.innerText = "0000";
+    startBtn.innerText = "Start";
+    pauseBtn.innerText = "Pause";
+    inputPanel.style.display = "flex";
   }
 }
 
-function pauseCountdown() {
-  clearInterval(interval);
-  isRunning = false;
-  document.getElementById("pauseBtn").disabled = true;
+/* PAUSE / PLAY */
+function handlePause() {
+  if (!isRunning) return;
+
+  if (interval) {
+    clearInterval(interval);
+    interval = null;
+    isPaused = true;
+    spinner.style.animationPlayState = "paused";
+    pauseBtn.innerText = "Play";
+  } else if (isPaused) {
+    startTimer();
+  }
 }
 
-function resetCountdown() {
-  clearInterval(interval);
-  currentValue = 0;
-  isRunning = false;
-
-  document.getElementById("counterDisplay").innerText = "";
-  document.getElementById("noteDisplay").innerText = "";
-
-  document.getElementById("counterValue").value = "";
-  document.getElementById("secondsValue").value = "";
-  document.getElementById("notesValue").value = "";
-
-  toggleButtons(false);
-}
-
-function toggleButtons(running) {
-  document.getElementById("pauseBtn").disabled = !running;
-  document.getElementById("resetBtn").disabled = !running;
+/* RESET */
+function resetApp() {
+  location.reload();
 }
 </script>
 
