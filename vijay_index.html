@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Countdown</title>
+
+<style>
+body {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #f2f2f7;
+  margin: 0;
+  padding: 20px;
+  text-align: center;
+}
+
+.container {
+  max-width: 400px;
+  margin: auto;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 12px;
+  border: 1px solid #d1d1d6;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+textarea {
+  resize: none;
+  height: 80px;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.primary {
+  background-color: #007aff;
+  color: white;
+}
+
+.secondary {
+  background-color: #e5e5ea;
+}
+
+button:disabled {
+  opacity: 0.5;
+}
+
+#counterDisplay {
+  font-size: 64px;
+  font-weight: 600;
+  margin-top: 25px;
+}
+
+#noteDisplay {
+  margin-top: 10px;
+  font-size: 18px;
+  color: #6c6c70;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="card">
+
+    <h1>Countdown</h1>
+
+    <input type="number" id="counterValue" placeholder="Counter value">
+    <input type="number" id="secondsValue" placeholder="Seconds interval">
+    <textarea id="notesValue" placeholder="Notes"></textarea>
+
+    <button class="primary" onclick="startCountdown()">Start</button>
+    <button class="secondary" onclick="pauseCountdown()" id="pauseBtn" disabled>Pause</button>
+    <button class="secondary" onclick="resetCountdown()" id="resetBtn" disabled>Reset</button>
+
+    <div id="counterDisplay"></div>
+    <div id="noteDisplay"></div>
+
+  </div>
+</div>
+
+<script>
+let interval = null;
+let currentValue = 0;
+let seconds = 1;
+let isRunning = false;
+
+function startCountdown() {
+  if (!isRunning) {
+    if (currentValue === 0) {
+      currentValue = parseInt(document.getElementById("counterValue").value);
+      seconds = parseInt(document.getElementById("secondsValue").value);
+    }
+
+    if (isNaN(currentValue) || isNaN(seconds) || currentValue <= 0 || seconds <= 0) {
+      alert("Enter valid numbers");
+      return;
+    }
+
+    document.getElementById("noteDisplay").innerText =
+      document.getElementById("notesValue").value;
+
+    document.getElementById("counterDisplay").innerText = currentValue;
+
+    interval = setInterval(() => {
+      currentValue--;
+      document.getElementById("counterDisplay").innerText = currentValue;
+
+      if (currentValue <= 0) {
+        clearInterval(interval);
+        isRunning = false;
+        toggleButtons(false);
+      }
+    }, seconds * 1000);
+
+    isRunning = true;
+    toggleButtons(true);
+  }
+}
+
+function pauseCountdown() {
+  clearInterval(interval);
+  isRunning = false;
+  document.getElementById("pauseBtn").disabled = true;
+}
+
+function resetCountdown() {
+  clearInterval(interval);
+  currentValue = 0;
+  isRunning = false;
+
+  document.getElementById("counterDisplay").innerText = "";
+  document.getElementById("noteDisplay").innerText = "";
+
+  document.getElementById("counterValue").value = "";
+  document.getElementById("secondsValue").value = "";
+  document.getElementById("notesValue").value = "";
+
+  toggleButtons(false);
+}
+
+function toggleButtons(running) {
+  document.getElementById("pauseBtn").disabled = !running;
+  document.getElementById("resetBtn").disabled = !running;
+}
+</script>
+
+</body>
+</html>
