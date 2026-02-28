@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Countdown Pro</title>
+<title>Vijay Practice Counter</title>
 
 <style>
 body {
@@ -17,12 +17,24 @@ body {
   flex-direction: column;
 }
 
-/* TOP BAR */
+/* TITLE BAR */
+.titleBar {
+  height: 8vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(18px, 2.5vw, 28px);
+  font-weight: 600;
+  letter-spacing: 1px;
+  opacity: 0.9;
+}
+
+/* TOP SECTION */
 .topBar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 25px 40px;
+  padding: 15px 40px 25px 40px;
   height: 22vh;
 }
 
@@ -99,7 +111,6 @@ button:active {
   line-height: 1.2;
   word-break: break-word;
   overflow-wrap: break-word;
-  display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
@@ -145,6 +156,10 @@ textarea {
 
 <body>
 
+<div class="titleBar">
+  VIJAY’s Practice Counter
+</div>
+
 <div id="inputPanel">
   <h2>Start Countdown</h2>
   <input type="number" id="counterValue" placeholder="Counter value (max 4 digits)" max="9999">
@@ -180,7 +195,6 @@ let seconds = 1;
 let isRunning = false;
 let isPaused = false;
 
-/* START FROM INPUT */
 function startFromInput() {
   currentValue = parseInt(counterValue.value);
   seconds = parseInt(secondsValue.value);
@@ -218,7 +232,6 @@ function startFromInput() {
   startTimer();
 }
 
-/* TIMER */
 function startTimer() {
   isRunning = true;
   isPaused = false;
@@ -241,7 +254,6 @@ function startTimer() {
   }, seconds * 1000);
 }
 
-/* START / STOP */
 function handleStartStop() {
   if (!isRunning && currentValue > 0) {
     startTimer();
@@ -259,7 +271,6 @@ function handleStartStop() {
   }
 }
 
-/* PAUSE / PLAY */
 function handlePause() {
   if (!isRunning) return;
 
@@ -274,7 +285,6 @@ function handlePause() {
   }
 }
 
-/* RESET */
 function resetApp() {
   location.reload();
 }
